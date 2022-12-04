@@ -22,7 +22,15 @@ async (accessToken, refreshToken, profile, done) => {
       return done(null, discordUser);
     } else {
       const newUser = await DiscordUser.create({
-        discordId: profile.id
+        discordId: profile.id,
+        username: profile.username,
+        discriminator: profile.discriminator,
+        tag: `${profile.username}#${profile.discriminator}`,
+        email: profile.email,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        avatar: profile.avatar,
+       guilds: profile.guilds
       });  
       return done(null, newUser);
     }

@@ -51,7 +51,7 @@ app.get('/discord/callback', passport.authenticate('discord', {
 });
 
 app.get('/discord/profile', (req, res) => {
-  res.status(200).send("OK")
+  
 })
                                  
 app.listen('8000', () => {

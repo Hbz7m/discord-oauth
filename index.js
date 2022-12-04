@@ -57,7 +57,7 @@ app.get('/discord/profile', (req, res) => {
 app.listen('8000', () => {
   mongoose.connect(process.env["MONGO"]);
   const encrypted = encrypt("fortnite");
-  const decrypted = decrypt("fortnite");
+  const decrypted = decrypt(encrypted);
   console.log(encrypted, decrypted)
   console.log("Backend is online")
 })

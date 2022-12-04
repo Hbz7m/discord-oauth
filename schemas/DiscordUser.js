@@ -13,12 +13,7 @@ const DiscordUser = new mongoose.Schema({
   username: String,
   discriminator: String,
   tag: String,
-  guilds: Array,
-  createdAt: {
-    type: mongoose.SchemaTypes.Date,
-    required: true,
-    default: new Date(),
-  },
+  guilds: Array
 });
 
-module.ecports = mongoose.model("discord_users", DiscordUser)
+module.exports = mongoose.model("discord_users", DiscordUser)

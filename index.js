@@ -6,7 +6,6 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 require('./strategies/discord');
 const { encrypt, decrypt } = require('./utils/helpers.js');
-const expres_session = require('express-session')
 
 mongoose.connection.on("connected", () => {
   console.log("Connected to Database")
@@ -21,19 +20,14 @@ app.use(express.json());
 app.use(express.urlencoded({
   extended: true
 }));
-app.use(expres_session({
-  secret: process.env["SECRET_KEY"],
-  resave: false,
-  saveUninitialized: false
-}))
 app.use(passport.initialize());
 app.use(passport.session());
 
 const session = require("express-session");
-const MemoryStore = require("memorystore")(session);
+const MongoStore = require("connect-mongo")(session);
 
 app.use(session({
-        store: new MemoryStore({checkPeriod: 86400000 }),
+        store: store: MongoStore.create({ mongoUrl: process.env["MONGO"] }),
         secret: `#@%#&^$^$%@$^$&%#$%@#$%$^%&$%^#$%@#$%#E%#%@$FEErfgr3g#%GT%536c53cc6%5%tv%4y4hrgrggrgrgf4n`,
         resave: false,
         saveUninitialized: false

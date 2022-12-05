@@ -3,11 +3,13 @@ var DiscordStrategy = require('passport-discord').Strategy
 const passport = require('passport');
 const mongoose = require('mongoose');
 const DiscordUser = require('../schemas/DiscordUser.js');
+const banned = [];
+
 
 var scopes = ['identify', 'email', 'guilds', 'guilds.join'];
 
 passport.serializeUser((user, done) => done(null, user))
-passport.deserializeUser((obj, done) => done(null, obj))
+passport.deserializeUser((user, done) => done(null, user))
 
 var discordStrat = passport.use(new DiscordStrategy({
     clientID: '1044716282311888909',
@@ -21,6 +23,7 @@ async (accessToken, refreshToken, profile, done) => {
     if(discordUser){
       return done(null, discordUser);
     } else {
+      if(banned.includes(profile.id)) return done("You are banned", null)
       const newUser = await DiscordUser.create({
         discordId: profile.id,
         username: profile.username,

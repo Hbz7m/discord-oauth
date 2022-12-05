@@ -51,13 +51,18 @@ app.get('/discord/callback', passport.authenticate('discord', {
 });
 
 app.get('/discord/profile', (req, res) => {
-  
+  if(!req.user){
+    res.redirect('/discord/login')
+  } else {
+  const data = req.user
+  const { accessToken } = req.user;
+  console.log(accessToken);
+  res.json(data);
+  }
 })
                                  
 app.listen('8000', () => {
   mongoose.connect(process.env["MONGO"]);
-  const encrypted = encrypt("fortnite");
-  const decrypted = decrypt(encrypted);
-  console.log(encrypted, decrypted)
+  console.log(encrypt('fortnite'))
   console.log("Backend is online")
 })

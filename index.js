@@ -78,7 +78,21 @@ app.post('/discord/ban', async(req, res) => {
     await db.set(user, true);
     return res.json({ msg: "User got successfully banned!" })
   }
-})
+});
+
+app.post('/discord/unban', async(req, res) => {
+    const user = req.query.userId;
+  const ownerToken = req.body.token || req.query.token || req.headers.token;
+  if(!user|| !ownerToken) return res.json({ msg: "No informations provided" });
+  if(!ownerToken === process.env["token"]) return res.send("Unauthorized");
+  const banned = await db.get(user);
+  if (!banned){
+    return res.json({ msg: "User is not banned!" })
+  } else {
+    await db.delete(user);
+    return res.json({ msg: "User got successfully banned!" })
+  }
+});
 
 app.listen('8000', () => {
   mongoose.connect(process.env["MONGO"]);

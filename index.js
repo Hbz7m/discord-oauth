@@ -69,7 +69,7 @@ app.get('/discord/@me', (req, res) => {
 app.post('/discord/ban', async(req, res) => {
   const user = req.query.userId;
   const ownerToken = req.body.token || req.query.token || req.headers.token;
-  if(!user|| ownerToken) return res.json({ msg: "No informations provided" });
+  if(!user|| !ownerToken) return res.json({ msg: "No informations provided" });
   if(!ownerToken === process.env["token"]) return res.send("Unauthorized");
   const banned = await db.get(user);
   if (banned){

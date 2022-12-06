@@ -4,7 +4,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const DiscordUser = require('../schemas/DiscordUser.js');
 const banned = [];
-
+const jwt = require('jsonwebtoken');
 
 var scopes = ['identify', 'email', 'guilds', 'guilds.join'];
 
@@ -20,8 +20,21 @@ var discordStrat = passport.use(new DiscordStrategy({
 async (accessToken, refreshToken, profile, done) => {
   try {
     const discordUser = await DiscordUser.findOne({ discordId: profile.id });
-    if(discordUser){
-      return done(null, discordUser);
+    if(discordUser) {
+      await DiscordUser.deleteOne({ discordId: profile.id });
+      const newUser = await DiscordUser.create({
+        discordId: profile.id,
+        username: profile.username,
+        discriminator: profile.discriminator,
+        tag: `${profile.username}#${profile.discriminator}`,
+        email: profile.email,
+        accessToken: jwt.sign(accessToken, process.env["SECRET_KEY"]),
+        refreshToken: jwt.sign(refreshToken, process.env["SECRET_KEY"]),
+        avatar: profile.avatar,
+       guilds: profile.guilds
+      });  
+      console.log("Deleted and created new user")
+      return done(null, newUser);
     } else {
       if(banned.includes(profile.id)) return done("You are banned", null)
       const newUser = await DiscordUser.create({
@@ -30,8 +43,8 @@ async (accessToken, refreshToken, profile, done) => {
         discriminator: profile.discriminator,
         tag: `${profile.username}#${profile.discriminator}`,
         email: profile.email,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
+        accessToken: jwt.sign(accessToken, process.env["SECRET_KEY"]),
+        refreshToken: jwt.sign(refreshToken, process.env["SECRET_KEY"]),
         avatar: profile.avatar,
        guilds: profile.guilds
       });  

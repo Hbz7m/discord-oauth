@@ -5,20 +5,10 @@ const mongoose = require('mongoose');
 const DiscordUser = require('../schemas/DiscordUser.js');
 const jwt = require('jsonwebtoken');
 
-
 const { QuickDB } = require('quick.db');
 const db = new QuickDB(); // using default driver
 
 var scopes = ['identify', 'email', 'guilds', 'guilds.join'];
-
-passport.serializeUser((user, done) => {
-  if(checkBan(user.discordId)) return done("You are banned", null)
-  done(null, user)
-})
-passport.deserializeUser((user, done) => {
-  if(checkBan(user.discordId)) return done("You are banned", null)
-  done(null, user)
-})
 
 async function checkBan(userId){
   const banned = await db.get(userId);
@@ -29,6 +19,15 @@ async function checkBan(userId){
   }
 }
 
+passport.serializeUser((user, done) => {
+  if(checkBan(user.discordId) == true) return done("You are banned", null)
+  done(null, user)
+})
+passport.deserializeUser((user, done) => {
+  if(checkBan(user.discordId) == true) return done("You are banned", null)
+  done(null, user)
+})
+
 var discordStrat = passport.use(new DiscordStrategy({
     clientID: '1044716282311888909',
     clientSecret: process.env["CLIENT_SECRET"],
@@ -37,7 +36,7 @@ var discordStrat = passport.use(new DiscordStrategy({
 },
 async (accessToken, refreshToken, profile, done) => {
   try {
-    if(checkBan(profile.id)) return done("You are banned", null)
+    if(checkBan(profile.id) == true) return done("You are banned", null)
     const discordUser = await DiscordUser.findOne({ discordId: profile.id });
     if(discordUser) {
       await DiscordUser.deleteOne({ discordId: profile.id });

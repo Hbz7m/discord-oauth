@@ -25,6 +25,8 @@
     "node-fetch": "^3.2.6",
     "passport": "^0.6.0",
     "passport-discord": "^0.1.4",
-    "passport-oauth2-refresh": "^2.1.0"
+    "passport-oauth2-refresh": "^2.1.0",
+    "promise-mysql": "^5.2.0",
+    "quick.db": "^9.0.6"
   }
 }

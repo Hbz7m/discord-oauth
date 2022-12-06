@@ -10,6 +10,9 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo")
 const jwt = require('jsonwebtoken');
 
+const { QuickDB } = require('quick.db');
+const db = new QuickDB(); // using default driver
+
 mongoose.connection.on("connected", () => {
   console.log("Connected to Database")
 })
@@ -63,10 +66,21 @@ app.get('/discord/@me', (req, res) => {
   }
 })
 
+app.post('/discord/ban', async(req, res) => {
+  const user = req.query.userId;
+  const ownerToken = req.body.token || req.query.token || req.headers.token;
+  if(!user|| ownerToken) return res.json({ msg: "No informations provided" });
+  if(!ownerToken === process.env["token"]) return res.send("Unauthorized");
+  const banned = await db.get(user);
+  if (banned){
+    return res.json({ msg: "User is already banned!" })
+  } else {
+    await db.set(user, true);
+    return res.json({ msg: "User got successfully banned!" })
+  }
+})
+
 app.listen('8000', () => {
   mongoose.connect(process.env["MONGO"]);
-  const encrypted = encrypt('fortnite')
-  const decrypted = decrypt(encrypted);
-  console.log(encrypted, decrypted)
   console.log("Backend is online")
 })

@@ -90,7 +90,7 @@ app.post('/discord/unban', async(req, res) => {
     return res.json({ msg: "User is not banned!" })
   } else {
     await db.delete(user);
-    return res.json({ msg: "User got successfully banned!" })
+    return res.json({ msg: "User got successfully unbanned!" })
   }
 });
 
